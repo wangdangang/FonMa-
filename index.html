@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FonMa พยากรณ์ฝน</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <!-- ✅ โหลด Google Maps JavaScript API -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <img src="/logo.png" alt="FonMa Logo" class="logo" />
+      <h1>FonMa</h1>
+      <p>แอปพยากรณ์ฝนแบบเรียลไทม์</p>
+      <p>ฝนตกทางโน้น อาจเคลื่อนมายังทางนี้</p>
+    </div>
+  </header>  
+
+  <main>
+    <section>
+      <div id="radar-container" class="radar-container" style="position: relative;">
+        <iframe
+          id="radar-iframe"
+          src=""
+          title="Radar Animation"
+          frameborder="0"
+          width="100%"
+          height="80vh"
+        ></iframe>
+        <!-- ✅ overlay สำหรับหยุดเรดาร์ -->
+        <div id="radar-overlay" style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.5); display: none; z-index: 10;"></div>
+      </div>
+
+      <!-- ✅ ปุ่มควบคุม -->
+      <div style="margin-top: 10px;">
+        <button id="toggle-btn">⏸️ หยุด</button>
+        <button id="notify-btn">🔔 แจ้งเตือนฝน</button>
+        <button id="track-btn">📍 ปักหมุดเพื่อติดตามฝน</button>
+        <button id="confirm-btn" style="display:none;">✅ ยืนยันตำแหน่งนี้</button>
+      </div>
+
+      <!-- ✅ ผลลัพธ์พยากรณ์ -->
+      <p id="forecast-result">รอการวิเคราะห์...</p>
+
+      <!-- ✅ แผนที่ Google Map -->
+      <div id="map" style="width: 100%; height: 400px; margin-top: 10px;"></div>
+    </section>
+  </main>
+
+  <!-- ✅ สคริปต์หลัก -->
+  <script src="main.js"></script>
+</body>
+</html>
