@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0"/>
+  <title>FonMa พยากรณ์ฝน</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      touch-action: none;
+      font-family: sans-serif;
+    }
+
+    .logo-container {
+      text-align: center;
+      padding: 10px;
+    }
+
+    .radar-wrapper {
+      position: relative;
+      width: 100%;
+      height: 70vh;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    #radar-zoom {
+      transform-origin: center center;
+      touch-action: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      pointer-events: none;
+    }
+
+    #pin {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      font-size: 24px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      display: none;
+    }
+
+    #touch-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 10;
+      touch-action: none;
+    }
+
+    .controls {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px 15px;
+      font-size: 1rem;
+    }
+
+    #forecast-result {
+      text-align: center;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <img src="/logo.png" alt="FonMa Logo" class="logo" width="80" />
+      <h1>FonMa</h1>
+      <p>1. แตะบนภาพเรดาร์เพื่อปักหมุดพิกัด</p>
+      <p>2. กดยืนยันเพื่อตรวจสอบเวลาฝนจะมา</p>
+    </div>
+  </header>
+
+  <main>
+    <div class="radar-wrapper" id="radar-wrapper">
+      <div id="radar-zoom">
+        <iframe
+          id="radar-iframe"
+          src="https://weather.bangkok.go.th/radar/RadarAnimationNk.aspx"
+          title="Radar Animation"
+        ></iframe>
+        <div id="pin">📍</div>
+        <div id="touch-overlay"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="toggle-btn">⏸️ หยุด</button>
+      <button id="notify-btn">🔔 แจ้งเตือนฝน</button>
+      <button id="track-btn">📍 ปักหมุดเพื่อติดตามฝน</button>
+      <button id="confirm-btn" style="display:none;">✅ ยืนยันพิกัด</button>
+    </div>
+
+    <p id="forecast-result">รอการวิเคราะห์...</p>
+  </main>
+
+  <script src="main.js"></script>
+</body>
+</html>
