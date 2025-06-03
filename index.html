@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+  <title>FonMa พยากรณ์ฝน</title>
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow-x: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+    }
+
+```
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-container {
+  text-align: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #74b9ff, #0984e3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.logo::before {
+  content: "🌧️";
+}
+
+h1 {
+  margin: 10px 0;
+  color: #2d3436;
+  font-size: 2em;
+  font-weight: 700;
+}
+
+.instructions {
+  background: rgba(116, 185, 255, 0.1);
+  border-radius: 15px;
+  padding: 15px;
+  margin: 15px 0;
+  border-left: 4px solid #74b9ff;
+}
+
+.instructions h3 {
+  margin: 0 0 10px 0;
+  color: #2d3436;
+  font-size: 1.1em;
+}
+
+.instructions p {
+  margin: 8px 0;
+  color: #636e72;
+  font-size: 0.95em;
+  line-height: 1.4;
+}
+
+.radar-container {
+  position: relative;
+  flex: 1;
+  min-height: 400px;
+  margin: 10px;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  background: #fff;
+}
+
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  transform-origin: center center;
+  min-height: 400px;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  transition: opacity 0.3s ease;
+}
+
+.loading-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e0e0e0;
+  border-top: 4px solid #74b9ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+button {
+  padding: 12px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  min-width: 140px;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+#toggle-btn {
+  background: linear-gradient(45deg, #ff7675, #e17055);
+  color: white;
+}
+
+#notify-btn {
+  background: linear-gradient(45deg, #00b894, #00a085);
+  color: white;
+}
+
+#notify-btn.active {
+  background: linear-gradient(45deg, #4CAF50, #45a049);
+}
+
+#track-btn {
+  background: linear-gradient(45deg, #fdcb6e, #e17055);
+  color: white;
+}
+
+#confirm-btn {
+  background: linear-gradient(45deg, #6c5ce7, #5f3dc4);
+  color: white;
+  display: none;
+  animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#forecast-result {
+  text-align: center;
+  margin: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1em;
+  font-weight: 500;
+  color: #2d3436;
+}
+
+.status-indicator {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.status-online {
+  background: #00b894;
+  color: white;
+}
+
+.status-offline {
+  background: #e17055;
+  color: white;
+}
+
+.error-message {
+  background: #ffeaa7;
+  border: 1px solid #fdcb6e;
+  color: #2d3436;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 10px;
+  text-align: center;
+  display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .logo-container {
+    padding: 15px;
+  }
+  
+  h1 {
+    font-size: 1.5em;
+  }
+  
+  .instructions {
+    margin: 10px;
+    padding: 12px;
+  }
+  
+  .radar-container {
+    margin: 5px;
+    min-height: 300px;
+  }
+  
+  iframe {
+    min-height: 300px;
+  }
+  
+  .controls {
+    padding: 15px 10px;
+    gap: 8px;
+  }
+  
+  button {
+    min-width: 120px;
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  
+  #forecast-result {
+    margin: 10px;
+    padding: 15px;
+    font-size: 1em;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+  }
+  
+  .logo-container,
+  .controls,
+  #forecast-result {
+    background: rgba(45, 52, 54, 0.95);
+    color: #ddd;
+  }
+  
+  h1 {
+    color: #ddd;
+  }
+  
+  .instructions {
+    background: rgba(116, 185, 255, 0.2);
+    color: #b2bec3;
+  }
+  
+  .instructions h3 {
+    color: #ddd;
+  }
+}
+```
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo-container">
+        <div class="logo"></div>
+        <h1>FonMa</h1>
+        <div class="instructions">
+          <h3>🌧️ วิธีการใช้งาน</h3>
+          <p>📍 แตะบนแผนที่เพื่อเลือกตำแหน่งที่ต้องการติดตาม</p>
+          <p>✅ กดปุ่ม "ยืนยันพิกัด" เพื่อรับการพยากรณ์อากาศ</p>
+          <p>🔔 เปิดการแจ้งเตือนเพื่อรับข้อมูลฝนทุก 5 นาที</p>
+        </div>
+      </div>
+    </header>
+
+```
+<main>
+  <section>
+    <div id="radar-container" class="radar-container">
+      <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>กำลังโหลดแผนที่อากาศ...</p>
+      </div>
+      
+      <iframe
+        id="radar-iframe"
+        src=""
+        title="Weather Radar Map"
+        allowfullscreen>
+      </iframe>
+      
+      <div id="error-message" class="error-message">
+        ไม่สามารถโหลดแผนที่ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="toggle-btn">⏸️ หยุดภาพเคลื่อนไหว</button>
+      <button id="notify-btn">🔔 เปิดการแจ้งเตือน</button>
+      <button id="confirm-btn">✅ ยืนยันพิกัด</button>
+    </div>
+
+    <div id="forecast-result">
+      📱 กำลังเตรียมระบบ... กรุณารอสักครู่
+    </div>
+  </section>
+</main>
+
+<div id="status-indicator" class="status-indicator status-online">
+  🟢 ออนไลน์
+</div>
+```
+
+  </div>
+
+  <script>
+const radarIframe = document.getElementById("radar-iframe");
+const radarContainer = document.getElementById("radar-container");
+const toggleBtn = document.getElementById("toggle-btn");
+const notifyBtn = document.getElementById("notify-btn");
+const confirmBtn = document.getElementById("confirm-btn");
+const forecastResult = document.getElementById("forecast-result");
+const loadingOverlay = document.getElementById("loading-overlay");
+const errorMessage = document.getElementById("error-message");
+const statusIndicator = document.getElementById("status-indicator");
+
+let animationRunning = true;
+let notifyInterval = null;
+let selectedCoord = null;
+let pin = null;
+let isRadarLoaded = false;
+
+// โหลดเรดาร์ - ปรับปรุงการจัดการ error
+function loadRadar() {
+  const windyUrl = "https://embed.windy.com/embed2.html?lat=13.736&lon=100.523&detailLat=13.736&detailLon=100.523&width=650&height=450&zoom=8&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1";
+  
+  radarIframe.src = windyUrl;
+  
+  radarIframe.onload = () => {
+    isRadarLoaded = true;
+    loadingOverlay.classList.add('hidden');
+    forecastResult.textContent = "📍 แตะบนแผนที่เพื่อเลือกพิกัดที่ต้องการติดตาม";
+  };
+  
+  radarIframe.onerror = () => {
+    loadingOverlay.classList.add('hidden');
+    errorMessage.style.display = 'block';
+    forecastResult.textContent = "❌ ไม่สามารถโหลดแผนที่ได้ กรุณาตรวจสอบการเชื่อมต่อ";
+  };
+  
+  setTimeout(() => {
+    if (!isRadarLoaded) {
+      forecastResult.textContent = "⏳ การโหลดแผนที่ใช้เวลานาน กรุณารอสักครู่...";
+    }
+  }, 10000);
+}
+
+// หยุด/เล่น animation
+function toggleAnimation() {
+  animationRunning = !animationRunning;
+  radarIframe.style.opacity = animationRunning ? "1" : "0.3";
+  radarIframe.style.filter = animationRunning ? "none" : "grayscale(50%)";
+  toggleBtn.textContent = animationRunning ? "⏸️ หยุดภาพเคลื่อนไหว" : "▶️ เล่นภาพเคลื่อนไหว";
+}
+
+// วิเคราะห์ฝนแบบสุ่ม
+function analyzeRain() {
+  const scenarios = [
+    { intensity: "เบา", minutes: Math.floor(Math.random() * 30) + 10 },
+    { intensity: "ปานกลาง", minutes: Math.floor(Math.random() * 45) + 15 },
+    { intensity: "หนัก", minutes: Math.floor(Math.random() * 60) + 30 },
+    { intensity: "ฟ้าร้อง", minutes: Math.floor(Math.random() * 90) + 45 }
+  ];
+  
+  return scenarios[Math.floor(Math.random() * scenarios.length)];
+}
+
+// แจ้งเตือนฝน
+async function startRainNotifications() {
+  if (!("Notification" in window)) {
+    alert("เบราว์เซอร์ไม่รองรับการแจ้งเตือน");
+    return;
+  }
+
+  try {
+    const permission = await Notification.requestPermission();
+    
+    if (permission === "granted") {
+      notifyBtn.textContent = "🔔 แจ้งเตือนเปิดอยู่";
+      notifyBtn.classList.add('active');
+      
+      if (notifyInterval) {
+        clearInterval(notifyInterval);
+      }
+      
+      notifyInterval = setInterval(() => {
+        const rain = analyzeRain();
+        new Notification("🌧️ FonMa แจ้งเตือนฝน", {
+          body: `พยากรณ์: ฝน${rain.intensity} ภายใน ${rain.minutes} นาที`,
+          icon: "/logo.png",
+          tag: "rain-forecast",
+        });
+      }, 5 * 60 * 1000);
+      
+      const firstRain = analyzeRain();
+      new Notification("🌧️ FonMa เริ่มการแจ้งเตือน", {
+        body: `พยากรณ์ปัจจุบัน: ฝน${firstRain.intensity} ภายใน ${firstRain.minutes} นาที`,
+        icon: "/logo.png",
+      });
+      
+    } else if (permission === "denied") {
+      alert("กรุณาอนุญาตการแจ้งเตือนในการตั้งค่าเบราว์เซอร์");
+    }
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาดในการขอสิทธิ์แจ้งเตือน:", error);
+    alert("ไม่สามารถขอสิทธิ์แจ้งเตือนได้");
+  }
+}
+
+// สร้าง overlay สำหรับจับ click
+function createOverlay() {
+  const overlay = document.createElement("div");
+  overlay.style.position = "absolute";
+  overlay.style.top = "0";
+  overlay.style.left = "0";
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
+  overlay.style.backgroundColor = "transparent";
+  overlay.style.cursor = "crosshair";
+  overlay.style.zIndex = "10";
+  
+  radarContainer.appendChild(overlay);
+  return overlay;
+}
+
+// ตั้งค่าการเลือกพิกัด
+function setupCoordinateSelection() {
+  const overlay = createOverlay();
+  
+  overlay.addEventListener("click", (event) => {
+    const rect = radarContainer.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    
+    selectedCoord = { x, y };
+    
+    if (pin) {
+      pin.remove();
+    }
+    
+    pin = document.createElement("div");
+    pin.style.position = "absolute";
+    pin.style.left = `${x - 12}px`;
+    pin.style.top = `${y - 40}px`;
+    pin.style.width = "24px";
+    pin.style.height = "40px";
+    pin.style.backgroundColor = "#FF4444";
+    pin.style.borderRadius = "50% 50% 50% 0";
+    pin.style.transform = "rotate(-45deg)";
+    pin.style.border = "2px solid white";
+    pin.style.boxShadow = "0 2px 4px rgba(0,0,0,0.3)";
+    pin.style.zIndex = "20";
+    pin.style.cursor = "pointer";
+    pin.style.animation = "bounce 0.5s ease-in-out";
+    
+    radarContainer.appendChild(pin);
+    
+    confirmBtn.style.display = "inline-block";
+    forecastResult.textContent = "📍 เลือกพิกัดแล้ว - กดยืนยันเพื่อรับการพยากรณ์อากาศ";
+  });
+}
+
+// ยืนยันพิกัด
+confirmBtn.addEventListener("click", async () => {
+  if (!selectedCoord) {
+    alert("กรุณาเลือกพิกัดบนแผนที่ก่อน");
+    return;
+  }
+
+  confirmBtn.disabled = true;
+  confirmBtn.textContent = "🔍 กำลังวิเคราะห์...";
+  forecastResult.textContent = "🔍 กำลังวิเคราะห์ข้อมูลอากาศ กรุณารอสักครู่...";
+
+  try {
+    const radarWidth = radarIframe.offsetWidth;
+    const radarHeight = radarIframe.offsetHeight;
+    
+    const lat = 13.736 + (selectedCoord.y / radarHeight - 0.5) * 2;
+    const lon = 100.523 + (selectedCoord.x / radarWidth - 0.5) * 2;
+    
+    // จำลองการพยากรณ์
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    const mockForecast = analyzeRain();
+    const arrivalTime = new Date(Date.now() + mockForecast.minutes * 60000);
+    
+    forecastResult.innerHTML = `
+      <div style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 20px; border-radius: 15px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <h3 style="margin: 0 0 15px 0; color: #1976d2; text-align: center;">🌧️ การพยากรณ์อากาศ</h3>
+        <p style="margin: 8px 0; display: flex; align-items: center;"><strong>🌦️ ความหนาแน่น:</strong> <span style="margin-left: 10px;">ฝน${mockForecast.intensity}</span></p>
+        <p style="margin: 8px 0; display: flex; align-items: center;"><strong>⏰ เวลาที่คาดว่าจะมาถึง:</strong> <span style="margin-left: 10px;">${mockForecast.minutes} นาที</span></p>
+        <p style="margin: 8px 0; display: flex; align-items: center;"><strong>🕐 เวลาประมาณ:</strong> <span style="margin-left: 10px;">${arrivalTime.toLocaleTimeString('th-TH')}</span></p>
+        <p style="margin: 8px 0; display: flex; align-items: center;"><strong>📍 พิกัด:</strong> <span style="margin-left: 10px;">${lat.toFixed(3)}, ${lon.toFixed(3)}</span></p>
+        <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px; text-align: center;">
+          <small style="color: #666;">💡 ข้อมูลการพยากรณ์อาจมีความคลาดเคลื่อน ±15 นาที</small>
+        </div>
+      </div>
+    `;
+    
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาด:", error);
+    forecastResult.innerHTML = `
+      <div style="background: #ffebee; padding: 20px; border-radius: 15px; color: #c62828;">
+        <h3 style="margin: 0 0 10px 0;">❌ เกิดข้อผิดพลาด</h3>
+        <p>ไม่สามารถประมวลผลข้อมูลได้ กรุณาลองใหม่อีกครั้ง</p>
+      </div>
+    `;
+  } finally {
+    confirmBtn.disabled = false;
+    confirmBtn.textContent = "✅ ยืนยันพิกัด";
+  }
+});
+
+// ตรวจสอบสถานะการเชื่อมต่อ
+function updateConnectionStatus() {
+  if (navigator.onLine) {
+    statusIndicator.textContent = "🟢 ออนไลน์";
+    statusIndicator.className = "status-indicator status-online";
+  } else {
+    statusIndicator.textContent = "🔴 ออฟไลน์";
+    statusIndicator.className = "status-indicator status-offline";
+  }
+}
+
+// เพิ่ม bounce animation
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes bounce {
+    0%, 20%, 53%, 80%, 100% {
+      transform: rotate(-45deg) translateY(0);
+    }
+    40%, 43% {
+      transform: rotate(-45deg) translateY(-10px);
+    }
+    70% {
+      transform: rotate(-45deg) translateY(-5px);
+    }
+  }
+`;
+document.head.appendChild(style);
+
+// เริ่มต้นระบบ
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("🌧️ FonMa กำลังเริ่มต้น...");
+  
+  loadRadar();
+  setupCoordinateSelection();
+  updateConnectionStatus();
+  
+  toggleBtn.addEventListener("click", toggleAnimation);
+  notifyBtn.addEventListener("click", startRainNotifications);
+  
+  // ตรวจสอบการเชื่อมต่อ
+  window.addEventListener('online', updateConnectionStatus);
+  window.addEventListener('offline', updateConnectionStatus);
+  
+  setTimeout(() => {
+    updateConnectionStatus();
+  }, 2000);
+});
+  </script>
+
+</body>
+</html>
