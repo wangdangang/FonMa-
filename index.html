@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>FonMa พยากรณ์ฝน</title>
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
-  <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="map" style="height: 60vh;"></div>
-  <div id="message" style="text-align: center; padding: 1em;"></div>
-  <div style="text-align: center;">
-    <button id="confirm-btn" style="display:none;">✅ ยืนยัน</button>
-    <button id="reset-btn" style="display:none;">🔄 เลือกใหม่</button>
+  <!-- Radar iframe -->
+  <div id="radar-marker" class="radar-container">
+    <iframe id="radar-iframe" src="https://weather.bangkok.go.th/Radar/RadarAnimationNk.aspx" frameborder="0"></iframe>
+    <div id="pin" class="pin" style="display:none;"></div>
   </div>
-  <div id="forecast-result" style="padding:1em; text-align:center;"></div>
+
+  <!-- Message & buttons -->
+  <div id="message" class="message">แตะค้างเพื่อย้ายหมุดเหนือเรดาร์ที่ต้องการ</div>
+  <div id="controls" class="controls" style="display:none;">
+    <button id="confirm-btn">✅ ยืนยัน</button>
+    <button id="reset-btn">🔄 เลือกใหม่</button>
+  </div>
+
+  <!-- Forecast output -->
+  <div id="forecast-result" class="forecast-result"></div>
+
   <script src="main.js"></script>
 </body>
 </html>
