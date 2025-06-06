@@ -225,3 +225,4 @@ function clearNotifications() {
 
 // Initial state for message (can be set directly in HTML)
 // message.textContent = 'แตะค้างเพื่อย้ายหมุดเหนือเรดาร์ที่ต้องการ'; // This will be set by iframe.onload now
+
