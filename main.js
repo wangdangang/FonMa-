@@ -1,7 +1,6 @@
 // Get DOM elements
 const radar = document.getElementById('radar-iframe');
-// Renamed from markerArea to radarContainer to match HTML ID
-const radarContainer = document.getElementById('radar-container');
+const radarContainer = document.getElementById('radar-container'); // Renamed for consistency
 const pin = document.getElementById('pin');
 const message = document.getElementById('message');
 const confirmBtn = document.getElementById('confirm-btn');
@@ -42,7 +41,7 @@ radarContainer.addEventListener('pointerdown', (e) => {
     let x = e.clientX - rect.left;
     let y = e.clientY - rect.top;
 
-    // Clamp coordinates to stay within bounds
+    // Clamp coordinates to stay within bounds of radarContainer
     x = Math.max(0, Math.min(x, rect.width));
     y = Math.max(0, Math.min(y, rect.height));
 
@@ -63,7 +62,7 @@ radarContainer.addEventListener('pointermove', (e) => {
     let x = e.clientX - rect.left;
     let y = e.clientY - rect.top;
 
-    // Clamp coordinates to stay within bounds
+    // Clamp coordinates to stay within bounds of radarContainer
     x = Math.max(0, Math.min(x, rect.width));
     y = Math.max(0, Math.min(y, rect.height));
     
@@ -92,7 +91,7 @@ confirmBtn.addEventListener('click', () => {
     confirmBtn.disabled = true;
     resetBtn.disabled = true;
     message.textContent = 'กำลังประมวลผลพยากรณ์...';
-    sendTrack();
+    sendTrack(); // *** นี่คือฟังก์ชันที่เรียกไปคำนวณฝน ***
 });
 
 // Reset button click
@@ -108,28 +107,37 @@ resetBtn.addEventListener('click', () => {
 
 /**
  * Sends the selected coordinates to the server and fetches the forecast.
+ * This function interacts with the rain prediction server.
  */
 function sendTrack() {
     // Normalize coordinates (0 to 1) relative to radar container dimensions
     const normX = selected.x / radarContainer.clientWidth;
     const normY = selected.y / radarContainer.clientHeight;
 
+    // Step 1: Send selected coordinates to the /track endpoint
     fetch('https://forms-forecast-server.onrender.com/track', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ x: normX, y: normY })
     })
-    .then(_ => fetch('https://forms-forecast-server.onrender.com/forecast'))
-    .then(res => {
-        if (!res.ok) { // Check if the response was successful (e.g., 200 OK)
-            throw new Error(`HTTP error! status: ${res.status}`);
+    .then(trackRes => {
+        if (!trackRes.ok) {
+            // If the track request fails, throw an error
+            return trackRes.text().then(text => { throw new Error(`Track request failed: ${trackRes.status} - ${text}`); });
         }
-        return res.json();
+        // Step 2: If track is successful, fetch the forecast from the /forecast endpoint
+        return fetch('https://forms-forecast-server.onrender.com/forecast');
+    })
+    .then(forecastRes => {
+        if (!forecastRes.ok) { // Check if the forecast response was successful (e.g., 200 OK)
+            return forecastRes.text().then(text => { throw new Error(`Forecast request failed: ${forecastRes.status} - ${text}`); });
+        }
+        return forecastRes.json();
     })
     .then(showForecast)
     .catch(err => {
-        console.error('Error fetching forecast:', err);
-        message.textContent = 'เกิดข้อผิดพลาดในการดึงข้อมูล โปรดลองใหม่';
+        console.error('Error in rain prediction process:', err);
+        message.textContent = `เกิดข้อผิดพลาดในการดึงข้อมูลฝน: ${err.message || 'โปรดลองใหม่'}`;
         resultBox.innerHTML = ''; // Clear previous results on error
     })
     .finally(() => {
@@ -222,7 +230,3 @@ function clearNotifications() {
     notifyTimers.forEach(t => clearTimeout(t)); // Cancel all pending timeouts
     notifyTimers = []; // Reset the array
 }
-
-// Initial state for message (can be set directly in HTML)
-// message.textContent = 'แตะค้างเพื่อย้ายหมุดเหนือเรดาร์ที่ต้องการ'; // This will be set by iframe.onload now
-
