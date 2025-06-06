@@ -1,59 +1,85 @@
+/*
+ * GENERAL STYLES & RESET
+ */
 body {
-  /* Adjusted font stack for better fallback and consistency */
+  /* ใช้ Font Stack ที่แข็งแกร่งขึ้นเพื่อให้แน่ใจว่ามีฟอนต์สำรองที่ดี */
   font-family: 'Mali', 'Thonburi', 'Avenir Next Thai', 'Kanit', sans-serif;
   text-align: center;
   background: #e0e4ec;
   color: #333;
   margin: 0;
   padding: 0;
-  display: flex; /* Use flexbox for vertical centering if needed, or simply for better layout control */
+  /* ใช้ Flexbox เพื่อช่วยจัดองค์ประกอบในหน้าเว็บ */
+  display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Ensure body takes full viewport height */
+  min-height: 100vh; /* ทำให้ body มีความสูงอย่างน้อยเท่ากับความสูงของ viewport */
+  overflow-y: auto; /* อนุญาตให้มีการเลื่อนหน้าจอได้หากเนื้อหาเกิน */
+  -webkit-overflow-scrolling: touch; /* ปรับปรุงการเลื่อนหน้าจอบน iOS */
 }
+
+/*
+ * HEADER/LOGO (ถ้ามี)
+ */
 .logo-container {
-  padding: 20px;
+  padding: 15px; /* ลด padding เล็กน้อยสำหรับอุปกรณ์ขนาดเล็ก */
 }
 .logo {
-  width: 80px;
-  margin-top: 10px;
+  width: 70px; /* ลดขนาดโลโก้เล็กน้อย */
+  margin-top: 5px;
 }
 h1 {
   font-style: italic;
   color: #2a6cff;
+  font-size: 2em; /* ขนาดเริ่มต้น */
 }
-/* Updated ID to match index.html for consistency */
+
+/*
+ * RADAR CONTAINER
+ */
 #radar-container {
   position: relative;
-  width: 100%;
-  /*max-width: 600px; */
-  /* Use aspect-ratio for consistent iframe proportions, comment out height */
-  /* height: 70vh; */
-  aspect-ratio: 16 / 9; /* Common video aspect ratio, adjust as needed (e.g., 4 / 3) */
-  touch-action: none; /* Prevent browser touch actions (like scrolling/zooming) during drag */
-  margin: 20px auto; /* Add some margin top/bottom */
-  background-color: #f0f0f0; /* Placeholder background while iframe loads */
-  border-radius: 8px; /* Optional: subtle rounded corners */
-  overflow: hidden; /* Ensure pin stays within container */
+  width: 95%; /* ใช้เปอร์เซ็นต์เพื่อปรับตามความกว้างของหน้าจอ */
+  max-width: 800px; /* เพิ่ม max-width เพื่อให้แสดงผลได้กว้างขึ้นบน iPad/Desktop */
+  /* ใช้ aspect-ratio เพื่อรักษาสัดส่วนของ iframe */
+  aspect-ratio: 16 / 9; /* สัดส่วนยอดนิยม (Wide screen), ลองใช้ 4 / 3 หากเนื้อหา iframe เป็นแบบนั้น */
+  touch-action: none; /* สำคัญมาก! ป้องกันการซูม/เลื่อนหน้าจอเมื่อแตะเพื่อปักหมุดบนอุปกรณ์สัมผัส */
+  margin: 20px auto; /* จัดกึ่งกลางและมีระยะห่าง */
+  background-color: #f0f0f0; /* พื้นหลังในขณะที่ iframe กำลังโหลด */
+  border-radius: 8px;
+  overflow: hidden; /* ซ่อนส่วนเกินของหมุดหากอยู่นอกขอบ */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* เพิ่มเงาเล็กน้อย */
 }
-/* Updated ID to match index.html for consistency */
+
 #radar-iframe {
-  width: 100%; 
+  width: 100%;
   height: 100%;
-  pointer-events: none; /* Make iframe content non-interactive for pin dragging */
-  display: block; /* Remove extra space below iframe */
+  pointer-events: none; /* ทำให้ iframe ไม่สามารถคลิกได้โดยตรง เพื่อให้ pointer events ของ #radar-container ทำงาน */
+  display: block; /* ลบช่องว่างใต้ iframe ที่เกิดจาก inline element */
+  /* Ensures iframe covers the entire container */
+  position: absolute;
+  top: 0;
+  left: 0;
 }
+
+/*
+ * CONTROLS & MESSAGES
+ */
 .controls {
   text-align: center;
-  margin: 10px 0; /* Consolidated margin declaration */
+  margin: 15px 0; /* ปรับ margin */
+  display: flex; /* ใช้ flexbox จัดปุ่ม */
+  justify-content: center; /* จัดปุ่มให้อยู่ตรงกลาง */
+  gap: 10px; /* ช่องว่างระหว่างปุ่ม */
+  flex-wrap: wrap; /* ให้ปุ่มขึ้นบรรทัดใหม่ได้ถ้าหน้าจอเล็กเกินไป */
 }
 .controls button {
   padding: 10px 20px;
-  margin: 0 5px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  flex-shrink: 0; /* ป้องกันไม่ให้ปุ่มหดตัว */
 }
 #confirm-btn {
   background-color: #4CAF50; /* Green */
@@ -61,6 +87,7 @@ h1 {
 }
 #confirm-btn:hover:not(:disabled) {
   background-color: #45a049;
+  transform: translateY(-2px);
 }
 #reset-btn {
   background-color: #f44336; /* Red */
@@ -68,6 +95,7 @@ h1 {
 }
 #reset-btn:hover:not(:disabled) {
   background-color: #da190b;
+  transform: translateY(-2px);
 }
 .controls button:disabled {
   opacity: 0.6;
@@ -79,45 +107,49 @@ h1 {
   font-size: 18px;
 }
 
+/*
+ * PIN
+ */
 .pin {
   position: absolute;
   width: 32px;
   height: 32px;
-  background: url('pin.png') no-repeat center center; /* Ensure pin.png is in the same directory as style.css, or adjust path */
+  background: url('pin.png') no-repeat center center;
   background-size: contain;
-  transform: translate(-50%, -50%); /* Centers the pin image precisely on the coordinates */
+  transform: translate(-50%, -100%); /* ปรับให้ฐานของหมุดอยู่ที่ตำแหน่งที่เลือก */
   cursor: grab;
-  z-index: 10; /* Ensure pin is above iframe content */
+  z-index: 10;
+  /* เพิ่ม transition สำหรับการเคลื่อนไหวที่นุ่มนวลขึ้น (ถ้ามีการลากด้วย JS) */
+  transition: transform 0.1s ease-out; 
 }
+
+/*
+ * MESSAGES & RESULTS
+ */
 .message, .forecast-result {
   text-align: center;
-  margin: 8px auto; /* Center text and add vertical margin */
-  max-width: 600px; /* Limit width for readability */
+  margin: 10px auto; /* เพิ่ม margin */
+  max-width: 600px;
+  padding: 5px; /* เพิ่ม padding เล็กน้อย */
 }
 
-/* Basic responsiveness for smaller screens (optional, fine-tune as needed) */
-@media (max-width: 600px) {
-  #radar-container {
-    margin-left: 10px;
-    margin-right: 10px;
-    aspect-ratio: 4 / 3; /* Maybe adjust aspect ratio for smaller screens */
-  }
-}
-
-/* Ensure forecast-result is visually distinct */
 .forecast-result {
   font-size: 1.1em;
-  padding: 10px;
+  padding: 15px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 8px;
   background-color: #f9f9f9;
-  margin-top: 15px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-top: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  display: flex; /* ใช้ flexbox จัดปุ่มแจ้งเตือน */
+  flex-direction: column;
+  align-items: center; /* จัดให้อยู่ตรงกลาง */
+  gap: 10px; /* ช่องว่างระหว่างข้อความและปุ่ม */
 }
 
 .forecast-result button {
   padding: 8px 15px;
-  margin: 5px;
+  margin: 5px; /* มี margin อยู่แล้ว ถ้าใช้ gap อาจไม่ต้องใช้ margin */
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -138,3 +170,93 @@ h1 {
 .forecast-result button#no:hover {
   background-color: #4b6677;
 }
+
+/*
+ * MEDIA QUERIES FOR RESPONSIVENESS
+ * (ปรับแต่งตามจุดที่คุณต้องการให้ Layout เปลี่ยนไป)
+ */
+
+/* สำหรับหน้าจอขนาดเล็กมาก (เช่น iPhone SE, Small Android Phones ในแนวตั้ง) */
+@media (max-width: 375px) {
+  h1 {
+    font-size: 1.8em;
+  }
+  #radar-container {
+    width: 98%; /* ขยายให้เต็มพื้นที่มากขึ้น */
+    margin: 10px auto;
+    aspect-ratio: 3 / 4; /* อาจจะใช้สัดส่วนแนวตั้งมากขึ้นถ้าเนื้อหาเรดาร์เหมาะ */
+  }
+  .controls button {
+    font-size: 14px;
+    padding: 8px 15px;
+  }
+  .message, .forecast-result {
+    font-size: 0.95em;
+    margin: 5px auto;
+  }
+}
+
+/* สำหรับ iPhone, Android Phones (แนวตั้ง) */
+@media (min-width: 376px) and (max-width: 767px) {
+  #radar-container {
+    width: 95%;
+    margin: 15px auto;
+    aspect-ratio: 16 / 9; /* ส่วนใหญ่ใช้สัดส่วนนี้ */
+  }
+}
+
+/* สำหรับ iPad Mini, iPad (แนวตั้ง), หรือแท็บเล็ตขนาดกลาง */
+@media (min-width: 768px) and (max-width: 1024px) {
+  h1 {
+    font-size: 2.5em;
+  }
+  #radar-container {
+    width: 90%;
+    margin: 25px auto;
+    max-width: 760px; /* จำกัดความกว้างสำหรับแท็บเล็ต */
+    aspect-ratio: 16 / 9;
+  }
+}
+
+/* สำหรับ Desktop และ iPad Pro (แนวนอน) */
+@media (min-width: 1025px) {
+  h1 {
+    font-size: 3em;
+  }
+  #radar-container {
+    width: 80%;
+    max-width: 960px; /* ขยาย max-width ให้กว้างขึ้นบนจอใหญ่ */
+    margin: 30px auto;
+    aspect-ratio: 16 / 9;
+  }
+}
+
+/* กรณีหน้าจอมีความสูงน้อย (เช่น มือถือแนวนอน) */
+@media (max-height: 500px) {
+  body {
+    padding: 5px; /* ลด padding ของ body */
+  }
+  .logo-container {
+    padding: 5px;
+  }
+  h1 {
+    font-size: 1.5em;
+    margin-top: 5px;
+  }
+  #radar-container {
+    height: 60vh; /* กำหนดความสูงตาม viewport เพื่อให้ไม่ใหญ่เกินไป */
+    aspect-ratio: unset; /* ยกเลิก aspect-ratio เพื่อให้ height ทำงาน */
+    min-height: 200px; /* ความสูงขั้นต่ำ */
+    margin: 5px auto;
+  }
+  .message, .controls, .forecast-result {
+    font-size: 0.85em; /* ลดขนาด font */
+    margin: 2px auto; /* ลด margin */
+    padding: 3px;
+  }
+  .controls button, .forecast-result button {
+    padding: 5px 10px;
+    font-size: 0.8em;
+  }
+}
+
