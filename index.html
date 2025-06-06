@@ -4,23 +4,21 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>FonMa พยากรณ์ฝน</title>
+  <link href="https://fonts.googleapis.com/css2?family=Mali:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Radar iframe -->
-  <div id="radar-marker" class="radar-container">
-    <iframe id="radar-iframe" src="https://weather.bangkok.go.th/Radar/RadarAnimationNk.aspx" frameborder="0"></iframe>
+  <div id="radar-container" class="radar-container">
+    <iframe id="radar-iframe" src="https://weather.bangkok.go.th/Radar/RadarAnimationNk.aspx" frameborder="0" title="เรดาร์พยากรณ์ฝนจากกรุงเทพมหานคร"></iframe>
     <div id="pin" class="pin" style="display:none;"></div>
   </div>
 
-  <!-- Message & buttons -->
-  <div id="message" class="message">แตะค้างเพื่อย้ายหมุดเหนือเรดาร์ที่ต้องการ</div>
+  <div id="message" class="message">กำลังโหลดเรดาร์...</div>
   <div id="controls" class="controls" style="display:none;">
     <button id="confirm-btn">✅ ยืนยัน</button>
     <button id="reset-btn">🔄 เลือกใหม่</button>
   </div>
 
-  <!-- Forecast output -->
   <div id="forecast-result" class="forecast-result"></div>
 
   <script src="main.js"></script>
