@@ -1,4 +1,4 @@
-let map, userMarker, pinMarker; 
+let map, userMarker, pinMarker;
 let watchId, forecastTimer, notifyTimers = [];
 const confirmBtn = document.getElementById("confirm-btn");
 const resetBtn = document.getElementById("reset-btn");
